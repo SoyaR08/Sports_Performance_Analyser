@@ -14,8 +14,10 @@ fields_to_drop = ["match_updated", "match_updated_360", "match_available_360", "
 
 df = df.drop(columns=fields_to_drop)
 
-df = df[df["competition_gender"] != "female"]
-df = df[df["competition_youth"] != True]
+# df = df[df["competition_gender"] != "female"]
+# df = df[df["competition_youth"] != True]
+
+df = df[df["competition_id"] == 16]
 
 # Separar la columna
 df[["season_start", "season_end"]] = df["season_name"].str.split("/", expand=True)
@@ -32,7 +34,7 @@ df = df[df["season_start"] > 2000]
 print(df)
 
 df.reset_index(drop=True, inplace=True)
-df.to_json("data/clean_competitions.json", orient="records", indent=4)
+df.to_json("cleaned_data/clean_competitions.json", orient="records", indent=4)
 
 # def clean_metadata(data):
 #     for match in data:
