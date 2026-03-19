@@ -1,3 +1,4 @@
+from datetime import time
 import pandas as pd
 import json
 import os
@@ -42,49 +43,48 @@ def create_players_dataset(path):
 
     return df
 
-# folder = "cleaned_data/cleaned_events"   # carpeta donde están los json
+def clean_matches(path):
 
-# rows = []
+    final_df = None
+    dfs = []
 
-# for file in os.listdir(folder):
+    for file in os.listdir(path):
 
-#     if file.endswith(".json"):
+        if file.endswith(".json"):
 
-#         match_id = file.replace(".json", "")
+            filepath = os.path.join(path, file)
 
-#         with open(os.path.join(folder, file), encoding="UTF-8") as f:
-#             data = json.load(f)
+            with open(filepath, "r", encoding="utf-8") as f:
+                data = json.load(f)
 
-#         for e in data:
+            df = pd.DataFrame(data)
 
-#             event_type = e.get("type", {}).get("name")
+            df["home_team"] = df["home_team"].apply(lambda x: x.get("home_team_name") if isinstance(x, dict) else None)
+            df["away_team"] = df["away_team"].apply(lambda x: x.get("away_team_name") if isinstance(x, dict) else None)
+            df["kick_off"] = df["kick_off"].apply(
+                lambda x: time.fromisoformat(x).strftime("%H:%M") if isinstance(x, str) else None
+            )
 
-#             if event_type not in ["Pass", "Shot"]:
-#                 continue
+            columns_to_delete = [
+                "season", "match_status_360", "last_updated", "last_updated_360", "competition_stage",
+                "stadium", "referee", "competition", "metadata", "match_status"
+            ]
 
-#             row = {
-#                 "match_id": match_id,
-#                 "minute": e.get("minute"),
-#                 "second": e.get("second"),
-#                 "team": e.get("team", {}).get("name"),
-#                 "player": e.get("player", {}).get("name"),
-#                 "type": event_type
-#             }
+            df = df.drop(columns=columns_to_delete, errors="ignore")
 
-#             if event_type == "Pass":
-#                 row["pass_outcome"] = e.get("pass", {}).get("outcome", {}).get("name")
+            dfs.append(df)
 
-#             if event_type == "Shot":
-#                 row["shot_outcome"] = e.get("shot", {}).get("outcome", {}).get("name")
+    final_df = pd.concat(dfs, ignore_index=True, sort=False)
 
-#             rows.append(row)
+    return final_df
 
-# df = pd.DataFrame(rows)
+# os.makedirs("datasets/players", exist_ok=True)
+os.makedirs("datasets/tests/matches", exist_ok=True)
+os.makedirs("datasets/matches", exist_ok=True)
 
-# df.to_csv("cleaned_data/test/test.csv", index=False)
+# df = create_players_dataset("cleaned_data/cleaned_lineups")
+# df = df.sort_values("id")
+# df.to_csv("datasets/players/players.csv", index=False)
 
-os.makedirs("datasets/players", exist_ok=True)
-
-df = create_players_dataset("cleaned_data/cleaned_lineups")
-df = df.sort_values("id")
-df.to_csv("datasets/players/players.csv", index=False)
+matches_df = clean_matches("cleaned_data/cleaned_matches")
+matches_df.to_csv("datasets/matches/matches.csv", index=False)
