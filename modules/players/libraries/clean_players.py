@@ -84,25 +84,49 @@ def getLineups(path):
         for team in data:  # Recorremos ambos equipos
             team_id = team.get("team_id")
             for player in team.get("lineup", []):
+
+                positions_data = player.get("positions", [])
+
+                position_minutes = {}
+
+                for p in positions_data:
+                    pos = abreviatePosition(p["position"])
+                    mins = minutes_played(p)
+
+                    if pos not in position_minutes:
+                        position_minutes[pos] = 0
+
+                    position_minutes[pos] += mins
+
+                # Total minutos
+                total_minutes = sum(position_minutes.values())
+
+                # Posición principal
+                main_position = max(position_minutes, key=position_minutes.get) if position_minutes else None
+
                 # Abreviar posiciones
-                player_positions = [
-                    abreviatePosition(p["position"])
-                    for p in player.get("positions", [])
-                ]
+                # player_positions = [
+                #     abreviatePosition(p["position"])
+                #     for p in player.get("positions", [])
+                # ]
 
                 # Calcular minutos
-                total_minutes = sum(minutes_played(p) for p in player.get("positions", []))
+                # total_minutes = sum(minutes_played(p) for p in player.get("positions", []))
 
                 all_lineups.append({
                     "player_id": player["player_id"],
                     # "player_name": player.get("name"),
                     "match_id": match_id,
                     "team_id": team_id,
-                    "position_list": player_positions,
+                    "position": main_position,
                     "minutes_played": total_minutes
                 })
 
-    return pd.DataFrame(all_lineups)
+    final_df = pd.DataFrame(all_lineups)
+
+    final_df = final_df[final_df["minutes_played"] > 0]
+
+    return final_df
 
 
 def getPlayerEvents(path):
