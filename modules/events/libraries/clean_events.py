@@ -2,7 +2,6 @@ import pandas as pd
 import json
 import os
 
-
 def clean_events(path):
 
     final_df = None
@@ -70,9 +69,3 @@ def clean_events(path):
 
     final_df = pd.concat(summaries, ignore_index=True, sort=False)
     return final_df
-
-os.makedirs("datasets/events", exist_ok=True)
-
-events_df = clean_events("cleaned_data/cleaned_events")
-
-events_df.to_csv("datasets/events/events.csv", index=False)

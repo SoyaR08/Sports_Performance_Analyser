@@ -91,7 +91,3 @@ def clean_matches(origin_path, destiny_path):
             df.to_json(destination, orient="records", indent=2, force_ascii=False)
 
     return "Partidos filtrados correctamente"
-
-print(clean_matches(origin_path="data/matches/11", destiny_path="cleaned_data/cleaned_matches"))
-print(organise_files(origin_path="cleaned_data/lineups", destiny_path="cleaned_data/cleaned_lineups", match_folder="cleaned_data/cleaned_matches"))
-print(organise_files(origin_path="cleaned_data/events", destiny_path="cleaned_data/cleaned_events", match_folder="cleaned_data/cleaned_matches"))
