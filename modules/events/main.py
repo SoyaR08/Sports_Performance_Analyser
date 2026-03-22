@@ -11,3 +11,4 @@ def build_events_environment():
     print("Datos obtenidos")
     events_df.to_csv("final_data/tests4/events/events.csv", index=False)
     print("Archivo events.csv")
+    print("============ Fin de Módulo ============")
