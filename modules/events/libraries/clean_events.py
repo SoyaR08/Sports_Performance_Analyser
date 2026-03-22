@@ -27,29 +27,30 @@ def clean_events(path):
                 if col not in df.columns:
                     df[col] = None
 
+            # Filtrar tiros
             shots = df[df["type.name"] == "Shot"]
             shots_on_target = shots[
                 shots["shot.outcome.name"].isin(["Goal", "Saved", "Saved to Post"])
             ]
+            goals = shots[shots["shot.outcome.name"] == "Goal"]  # <-- NUEVO
 
-
+            # Tarjetas
             yellow_cards_fouls = df[
                 (df["type.name"] == "Foul Committed") &
                 (df["foul_committed.card.name"] == "Yellow Card")
             ]
-
-            # Ahora ya puedes filtrar sin miedo
             yellow_cards_behaviour = df[
                 (df["type.name"] == "Bad Behaviour") &
                 (df["bad_behaviour.card.name"] == "Yellow Card")
             ]
-
             red_cards = df[
                 df["bad_behaviour.card.name"].isin(["Red Card", "Second Yellow"])
             ]
 
+            # Conteos por equipo
             shots_by_team = shots.groupby("team.name").size()
             shots_on_target_by_team = shots_on_target.groupby("team.name").size()
+            goals_by_team = goals.groupby("team.name").size()  # <-- NUEVO
             yellow_by_team = pd.concat([yellow_cards_fouls, yellow_cards_behaviour]).groupby("team.name").size()
             red_by_team = red_cards.groupby("team.name").size()
 
@@ -58,6 +59,7 @@ def clean_events(path):
             summary = pd.DataFrame({
                 "shots": shots_by_team,
                 "shots_on_target": shots_on_target_by_team,
+                "goals": goals_by_team,                # <-- NUEVO
                 "yellow_cards": yellow_by_team,
                 "red_cards": red_by_team
             }).fillna(0)
