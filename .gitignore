@@ -1,6 +1,11 @@
 load/libraries/__pycache__/*
 load/__pycache__/*
+
 modules/players/libraries/__pycache__/*
 modules/players/__pycache__/*
+
 modules/events/libraries/__pycache__/*
 modules/events/__pycache__/*
+
+modules/matches/libraries/__pycache__/*
+modules/matches/__pycache__/*
