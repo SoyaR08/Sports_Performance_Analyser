@@ -48,11 +48,16 @@ def clean_events(path):
             ]
 
             # Conteos por equipo
-            shots_by_team = shots.groupby("team.name").size()
-            shots_on_target_by_team = shots_on_target.groupby("team.name").size()
-            goals_by_team = goals.groupby("team.name").size()  # <-- NUEVO
-            yellow_by_team = pd.concat([yellow_cards_fouls, yellow_cards_behaviour]).groupby("team.name").size()
-            red_by_team = red_cards.groupby("team.name").size()
+            # shots_by_team = shots.groupby("team.name").size()
+            shots_by_team = shots.groupby("team.id").size()
+            # shots_on_target_by_team = shots_on_target.groupby("team.name").size()
+            shots_on_target_by_team = shots_on_target.groupby("team.id").size()
+            # goals_by_team = goals.groupby("team.name").size()
+            goals_by_team = goals.groupby("team.id").size()
+            # yellow_by_team = pd.concat([yellow_cards_fouls, yellow_cards_behaviour]).groupby("team.name").size()
+            yellow_by_team = pd.concat([yellow_cards_fouls, yellow_cards_behaviour]).groupby("team.id").size()
+            # red_by_team = red_cards.groupby("team.name").size()
+            red_by_team = red_cards.groupby("team.id").size()
 
             match_id = file.replace(".json", "")
 
