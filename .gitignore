@@ -9,3 +9,6 @@ modules/events/__pycache__/*
 
 modules/matches/libraries/__pycache__/*
 modules/matches/__pycache__/*
+
+modules/teams/libraries/__pycache__/*
+modules/teams/__pycache__/*
