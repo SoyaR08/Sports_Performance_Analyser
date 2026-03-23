@@ -3,7 +3,7 @@ from modules.players import build_environment
 from modules.events import build_events_environment
 from modules.matches import build_matches_environment
 from modules.teams import build_teams_environment
-from analytics import build_leaderboards, add_player_info
+from analytics import build_leaderboards, add_player_info, plot_top_scorers, plot_top_assistants, plot_top_goalkeepers
 import pandas as pd
 
 if __name__ == "__main__":
@@ -20,11 +20,13 @@ if __name__ == "__main__":
 
     scorers, assistants, goalkeepers = build_leaderboards(players_stats_df, "final_data/players/players.csv")
 
-    print("TOP GOLEADORES")
-    print(scorers[["name", "goals"]].head(10))
+    players_df = pd.read_csv("final_data/players/players.csv")
+    players_minutes_df = pd.read_csv("final_data/players/players_minutes.csv")
 
-    print("\nTOP ASISTENTES")
-    print(assistants[["name", "assists"]].head(10))
+    plot_top_scorers(scorers)
 
-    print("\nMEJORES PORTEROS")
-    print(goalkeepers[["name", "saves_pm"]].head(10))
+    plot_top_assistants(assistants)
+
+    plot_top_goalkeepers(goalkeepers)
+    
+    
