@@ -47,30 +47,35 @@ def clean_events(path):
                 df["bad_behaviour.card.name"].isin(["Red Card", "Second Yellow"])
             ]
 
-            # Conteos por equipo
-            # shots_by_team = shots.groupby("team.name").size()
-            shots_by_team = shots.groupby("team.id").size()
-            # shots_on_target_by_team = shots_on_target.groupby("team.name").size()
-            shots_on_target_by_team = shots_on_target.groupby("team.id").size()
-            # goals_by_team = goals.groupby("team.name").size()
-            goals_by_team = goals.groupby("team.id").size()
-            # yellow_by_team = pd.concat([yellow_cards_fouls, yellow_cards_behaviour]).groupby("team.name").size()
-            yellow_by_team = pd.concat([yellow_cards_fouls, yellow_cards_behaviour]).groupby("team.id").size()
-            # red_by_team = red_cards.groupby("team.name").size()
-            red_by_team = red_cards.groupby("team.id").size()
-
             match_id = file.replace(".json", "")
 
-            summary = pd.DataFrame({
-                "shots": shots_by_team,
-                "shots_on_target": shots_on_target_by_team,
-                "goals": goals_by_team,                # <-- NUEVO
-                "yellow_cards": yellow_by_team,
-                "red_cards": red_by_team
-            }).fillna(0)
+            # Agrupaciones
+            shots_by_team = shots.groupby("team.id").size().reset_index(name="shots")
+            shots_on_target_by_team = shots_on_target.groupby("team.id").size().reset_index(name="shots_on_target")
+            goals_by_team = goals.groupby("team.id").size().reset_index(name="goals")
+            yellow_by_team = pd.concat([yellow_cards_fouls, yellow_cards_behaviour]) \
+                .groupby("team.id").size().reset_index(name="yellow_cards")
+            red_by_team = red_cards.groupby("team.id").size().reset_index(name="red_cards")
 
+            # Merge de todo
+            summary = shots_by_team \
+                .merge(shots_on_target_by_team, on="team.id", how="left") \
+                .merge(goals_by_team, on="team.id", how="left") \
+                .merge(yellow_by_team, on="team.id", how="left") \
+                .merge(red_by_team, on="team.id", how="left")
+
+            # Limpiar nulos
+            summary = summary.fillna(0)
+
+            # Convertir a int
+            for col in ["shots", "shots_on_target", "goals", "yellow_cards", "red_cards"]:
+                summary[col] = summary[col].astype(int)
+
+            # Añadir match_id
             summary["match_id"] = match_id
-            summary = summary.reset_index().rename(columns={"index": "team"})
+
+            # Renombrar columna team.id -> team (como hacías antes)
+            summary = summary.rename(columns={"team.id": "team"})
 
             summaries.append(summary)
 
