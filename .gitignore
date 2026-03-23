@@ -12,3 +12,5 @@ modules/matches/__pycache__/*
 
 modules/teams/libraries/__pycache__/*
 modules/teams/__pycache__/*
+
+analytics/__pycache__/*
