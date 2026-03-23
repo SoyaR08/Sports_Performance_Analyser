@@ -3,6 +3,14 @@ import pandas as pd
 import json
 import os
 
+def get_result(home, away):
+    if home > away:
+        return "Win"
+    elif home < away:
+        return "Lose"
+    else:
+        return "Draw"
+
 def clean_matches(path):
 
     final_df = None
@@ -29,6 +37,9 @@ def clean_matches(path):
                 "season", "match_status_360", "last_updated", "last_updated_360", "competition_stage",
                 "stadium", "referee", "competition", "metadata", "match_status"
             ]
+
+            df["home_result"] = df.apply(lambda x: get_result(x["home_score"], x["away_score"]), axis=1)
+            df["away_result"] = df.apply(lambda x: get_result(x["away_score"], x["home_score"]), axis=1)
 
             df = df.drop(columns=columns_to_delete, errors="ignore")
 

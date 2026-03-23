@@ -144,13 +144,16 @@ def getPlayerEvents(path):
 
         df = pd.json_normalize(data)
 
+        df["team_id"] = df["possession_team.id"]
+
         # Asegurar columnas (clave para evitar errores)
         for col in [
             "shot.outcome.name",
             "pass.goal_assist",
             "foul_committed.card.name",
             "bad_behaviour.card.name",
-            "goalkeeper.outcome.name"
+            "goalkeeper.outcome.name",
+            "team_id"
         ]:
             if col not in df.columns:
                 df[col] = None
@@ -194,7 +197,8 @@ def getPlayerEvents(path):
             "assists": assists_by_player,
             "yellow_cards": yellow_by_player,
             "red_cards": red_by_player,
-            "saves": saves_by_player
+            "saves": saves_by_player,
+            "team_id": df.groupby("player.id")["team_id"].first()
         }).fillna(0)
 
         summary["match_id"] = match_id
